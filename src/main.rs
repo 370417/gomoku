@@ -9,10 +9,12 @@ fn main() {
     println!("Hello, world!");
 
     let stdin = io::stdin();
-    let input = cli::read_move(&stdin);
-    match input {
-        Command::Exit => println!("exiting"),
-        Command::Move(x, y) => println!("{:?}", (x, y)),
-        Command::None => println!("None"),
-    };
+    loop {
+        let input = cli::read_move(&stdin, "X");
+        match input {
+            Command::Exit => break,
+            Command::Move(x, y) => println!("{:?}", (x, y)),
+            Command::None => println!("None"),
+        };
+    }
 }

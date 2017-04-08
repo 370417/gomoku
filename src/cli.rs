@@ -8,9 +8,11 @@ pub enum Command {
     None,
 }
 
-pub fn read_move(stdin: &io::Stdin) -> Command {
+/// Read one move from stdin
+pub fn read_move(stdin: &io::Stdin, player: &str) -> Command {
     let mut line = String::new();
 
+    println!("{}>", player);
     stdin.read_line(&mut line).expect("Failed to read line");
     let input = line.trim();
     match input {
