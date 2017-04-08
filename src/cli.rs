@@ -1,57 +1,60 @@
 use std::io;
-use std::io::BufRead;
 
 use SIZE;
 
-pub fn read_move(stdin: &io::Stdin) {
-    for line in stdin.lock().lines() {
-        let string = line.unwrap();
-        let word = string.trim();
+pub enum Command {
+    Exit,
+    Move(u32, u32),
+    None,
+}
 
-        match word {
-            "exit" | "quit" | "q" => return,
-            _ if is_pos(word) => println!("pos {}", word),
-            _ => println!("echo {}", word),
-        };
+pub fn read_move(stdin: &io::Stdin) -> Command {
+    let mut line = String::new();
+
+    stdin.read_line(&mut line).expect("Failed to read line");
+    let input = line.trim();
+    match input {
+        "exit" | "quit" | "q" => Command::Exit,
+        _ => parse_pos(input),
     }
 }
 
-/// Determine if str is a valid position
-///
 /// ```
-/// assert!(is_pos("A1"));
-/// assert!(!is_pos("Z99"));
-/// assert!(!is_pos("A 1"));
-/// assert!(!is_pos("A0"));
-/// assert!(!is_pos("a1"));
+/// assert_eq!(parse_pos("A1"), Some((0, 0)));
+/// assert_eq!(parse_pos("C10"), Some((2, 9)));
+/// assert_eq!(parse_pos("Z99"), None);
+/// assert_eq!(parse_pos("A 1"), None);
+/// assert_eq!(parse_pos("A0"), None);
+/// assert_eq!(parse_pos("a1"), None);
 /// ```
-fn is_pos(str: &str) -> bool {
+fn parse_pos(str: &str) -> Command {
     if str.len() < 2 {
-        return false;
+        return Command::None;
     }
-    let (head, tail) = divide_pos(str);
-    is_letter(head) && is_number(tail)
-}
-
-/// Divide a str into a head char and tail str
-fn divide_pos(str: &str) -> (char, &str) {
     let mut chars = str.chars();
     let head = chars.next().unwrap();
     let tail = chars.as_str();
-    (head, tail)
+    let col = parse_letter(head);
+    let row = parse_number(tail);
+    match (col, row) {
+        (Some(x), Some(y)) => Command::Move(x, y),
+        _ => Command::None,
+    }
 }
 
-/// Determine if char is a valid column letter
-fn is_letter(character: char) -> bool {
+fn parse_letter(character: char) -> Option<u32> {
     let letter = character as u32;
     let a = 'A' as u32;
-    letter >= a && letter < a + SIZE
+    if letter >= a && letter < a + SIZE {
+        Some(letter - a)
+    } else {
+        None
+    }
 }
 
-/// Determine if str is a valid row number
-fn is_number(str: &str) -> bool {
+fn parse_number(str: &str) -> Option<u32> {
     match str.parse::<u32>() {
-        Ok(n) if n > 0 && n <= SIZE => true,
-        _ => false,
+        Ok(n) if n > 0 && n <= SIZE => Some(n - 1),
+        _ => None,
     }
 }
