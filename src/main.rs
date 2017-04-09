@@ -1,3 +1,5 @@
+//! Handles i/o
+
 mod game;
 
 use std::io;
@@ -43,6 +45,7 @@ fn read_move(stdin: &io::Stdin, player: &str) -> Command {
     }
 }
 
+/// Print the game board
 fn display_game(game: &Game) {
     print!("   ");
     for n in 0..SIZE {
@@ -63,6 +66,10 @@ fn display_game(game: &Game) {
     println!();
 }
 
+/// Parse a str as a position
+///
+/// # Examples
+///
 /// ```
 /// assert_eq!(parse_pos("A1"), Some((0, 0)));
 /// assert_eq!(parse_pos("C10"), Some((2, 9)));
@@ -86,6 +93,7 @@ fn parse_pos(str: &str) -> Command {
     }
 }
 
+/// Parse a char as a column letter
 fn parse_letter(character: char) -> Option<u32> {
     let letter = character as u32;
     let a = 'A' as u32;
@@ -96,6 +104,7 @@ fn parse_letter(character: char) -> Option<u32> {
     }
 }
 
+/// Parse a str as a row number
 fn parse_number(str: &str) -> Option<u32> {
     match str.parse::<u32>() {
         Ok(n) if n > 0 && n <= SIZE => Some(n - 1),

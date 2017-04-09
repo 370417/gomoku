@@ -1,3 +1,5 @@
+//! Handles game state and logic
+
 pub const SIZE: u32 = 19;
 
 #[derive(Copy, Clone)]
@@ -19,10 +21,12 @@ impl Game {
         }
     }
 
+    /// Determine if (x, y) is a legal move
     pub fn can_move(&self, x: u32, y: u32) -> bool {
         self.board[y as usize][x as usize].is_none()
     }
 
+    /// Make the move (x, y)
     pub fn make_move(&mut self, x: u32, y: u32) {
         self.board[y as usize][x as usize] = Some(self.player);
         self.player = match self.player {
