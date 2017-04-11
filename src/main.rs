@@ -5,7 +5,6 @@ mod game;
 use std::io;
 
 use game::SIZE;
-use game::Player;
 use game::Game;
 use game::Move;
 
@@ -33,7 +32,7 @@ fn main() {
             match result {
                 Move::Fail => 0,
                 Move::Normal => break,
-                Move::Win => break,
+                Move::Win => return,
                 Move::Tie => break,
             };
         }
@@ -64,8 +63,8 @@ fn display_game(game: &Game) {
         for piece in row {
             let char = match *piece {
                 None => '·',
-                Some(Player::White) => 'O',
-                Some(Player::Black) => 'X',
+                Some(n) if n % 2 == 0 => 'O',
+                Some(_) => 'X',
             };
             print!("{} ", char);
         }

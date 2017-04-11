@@ -2,12 +2,6 @@
 
 pub const SIZE: i32 = 19;
 
-#[derive(Copy, Clone)]
-pub enum Player {
-    Black,
-    White,
-}
-
 pub enum Move {
     Win,
     Tie,
@@ -16,14 +10,14 @@ pub enum Move {
 }
 
 pub struct Game {
-    pub player: Player,
-    pub board: [[Option<Player>; SIZE as usize]; SIZE as usize],
+    pub turn: i32,
+    pub board: [[Option<i32>; SIZE as usize]; SIZE as usize],
 }
 
 impl Game {
     pub fn new() -> Game {
         Game {
-            player: Player::Black,
+            turn: 1,
             board: [[None; SIZE as usize]; SIZE as usize],
         }
     }
@@ -33,15 +27,19 @@ impl Game {
         if self.board[y as usize][x as usize].is_some() {
             return Move::Fail;
         }
-        self.board[y as usize][x as usize] = Some(self.player);
+        self.board[y as usize][x as usize] = Some(self.turn);
         if self.check_victory(x, y) {
             return Move::Win;
         }
-        self.player = match self.player {
-            Player::Black => Player::White,
-            Player::White => Player::Black,
-        };
+        if self.check_tie() {
+            return Move::Tie;
+        }
+        self.turn += 1;
         Move::Normal
+    }
+
+    fn check_tie(&self) -> bool {
+        self.turn == SIZE * SIZE
     }
 
     fn check_victory(&self, x: i32, y: i32) -> bool {
@@ -55,9 +53,13 @@ impl Game {
         if x < 0 || y < 0 || x >= SIZE || y >= SIZE {
             return 0;
         }
-        match (self.player, self.board[x as usize][y as usize]) {
-            (Player::White, Some(Player::White)) | (Player::Black, Some(Player::Black)) => 1 + self.count_ray(x + dx, y + dy, dx, dy),
+        match self.board[y as usize][x as usize] {
+            Some(n) if same_parity(n, self.turn) => 1 + self.count_ray(x + dx, y + dy, dx, dy),
             _ => 0,
         }
     }
+}
+
+fn same_parity(a: i32, b: i32) -> bool {
+    (a + b) % 2 == 0
 }
