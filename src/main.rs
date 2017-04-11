@@ -11,8 +11,8 @@ use game::Move;
 
 enum Command {
     Exit,
-    Move(u32, u32),
-    Show(u32, u32),
+    Move(i32, i32),
+    Show(i32, i32),
     None,
 }
 
@@ -56,7 +56,7 @@ fn read_move(stdin: &io::Stdin) -> Command {
 fn display_game(game: &Game) {
     print!("   ");
     for n in 0..SIZE {
-        print!("{} ", char::from(('A' as u32 + n) as u8));
+        print!("{} ", char::from(('A' as i32 + n) as u8));
     }
     let board = &game.board;
     for (index, row) in board.iter().enumerate() {
@@ -89,7 +89,7 @@ fn drop(str: &str) -> String {
 }
 
 /// Turn an optional tuple into a move command
-fn into_move(pos: Option<(u32, u32)>) -> Command {
+fn into_move(pos: Option<(i32, i32)>) -> Command {
     match pos {
         Some((x, y)) => Command::Move(x, y),
         None => Command::None,
@@ -97,7 +97,7 @@ fn into_move(pos: Option<(u32, u32)>) -> Command {
 }
 
 /// Turn an optional tuple into a show command
-fn into_show(pos: Option<(u32, u32)>) -> Command {
+fn into_show(pos: Option<(i32, i32)>) -> Command {
     match pos {
         Some((x, y)) => Command::Show(x, y),
         None => Command::None,
@@ -116,7 +116,7 @@ fn into_show(pos: Option<(u32, u32)>) -> Command {
 /// assert_eq!(parse_pos("A0"), None);
 /// assert_eq!(parse_pos("a1"), None);
 /// ```
-fn parse_pos(str: &str) -> Option<(u32, u32)> {
+fn parse_pos(str: &str) -> Option<(i32, i32)> {
     if str.len() < 2 {
         return None;
     }
@@ -132,9 +132,9 @@ fn parse_pos(str: &str) -> Option<(u32, u32)> {
 }
 
 /// Parse a char as a column letter
-fn parse_letter(character: char) -> Option<u32> {
-    let letter = character as u32;
-    let a = 'A' as u32;
+fn parse_letter(character: char) -> Option<i32> {
+    let letter = character as i32;
+    let a = 'A' as i32;
     if letter >= a && letter < a + SIZE {
         Some(letter - a)
     } else {
@@ -143,8 +143,8 @@ fn parse_letter(character: char) -> Option<u32> {
 }
 
 /// Parse a str as a row number
-fn parse_number(str: &str) -> Option<u32> {
-    match str.parse::<u32>() {
+fn parse_number(str: &str) -> Option<i32> {
+    match str.parse::<i32>() {
         Ok(n) if n > 0 && n <= SIZE => Some(n - 1),
         _ => None,
     }
