@@ -86,7 +86,7 @@ fn show_move(game: &Game, target_x: i32, target_y: i32) {
         for x in 0..SIZE {
             let char = match game.board[y as usize][x as usize] {
                 None => '·',
-                Some(n) if n % 2 == 0 => '0',
+                Some(n) if n % 2 == 0 => 'O',
                 Some(_) => 'X',
             };
             let separator = match (target_x, target_y) {

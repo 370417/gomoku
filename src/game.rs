@@ -50,7 +50,7 @@ impl Game {
     }
 
     fn count_ray(&self, x: i32, y: i32, dx: i32, dy: i32) -> i32 {
-        if x < 0 || y < 0 || x >= SIZE || y >= SIZE {
+        if !in_bounds(x, y) {
             return 0;
         }
         match self.board[y as usize][x as usize] {
@@ -58,6 +58,10 @@ impl Game {
             _ => 0,
         }
     }
+}
+
+fn in_bounds(x: i32, y: i32) -> bool {
+    x >= 0 && y >= 0 && x < SIZE && y < SIZE
 }
 
 fn same_parity(a: i32, b: i32) -> bool {
