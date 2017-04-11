@@ -26,7 +26,7 @@ fn main() {
             match read_move(&stdin) {
                 Command::Exit => return,
                 Command::Move(x, y) => result = game.make_move(x, y),
-                Command::Show(x, y) => println!("{} {}", x, y),
+                Command::Show(x, y) => show_move(&game, x, y),
                 Command::None => (),
             };
             match result {
@@ -67,6 +67,34 @@ fn display_game(game: &Game) {
                 Some(_) => 'X',
             };
             print!("{} ", char);
+        }
+    }
+    println!();
+}
+
+fn show_move(game: &Game, target_x: i32, target_y: i32) {
+    print!("   ");
+    for n in 0..SIZE {
+        print!("{} ", char::from(('A' as i32 + n) as u8));
+    }
+    for y in 0..SIZE {
+        let separator = match (target_x, target_y) {
+            (0, b) if b == y => '[',
+            _ => ' ',
+        };
+        print!("\n{:2}{}", y + 1, separator);
+        for x in 0..SIZE {
+            let char = match game.board[y as usize][x as usize] {
+                None => '·',
+                Some(n) if n % 2 == 0 => '0',
+                Some(_) => 'X',
+            };
+            let separator = match (target_x, target_y) {
+                (a, b) if a == x && b == y => ']',
+                (a, b) if a == x + 1 && b == y => '[',
+                _ => ' ',
+            };
+            print!("{}{}", char, separator);
         }
     }
     println!();
