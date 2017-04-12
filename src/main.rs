@@ -1,7 +1,7 @@
 //! Handles i/o
 
 mod game;
-// mod ai;
+mod ai;
 
 use std::io;
 
