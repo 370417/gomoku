@@ -11,23 +11,28 @@ pub enum Move {
 
 pub struct Game {
     pub turn: i32,
-    pub board: [[Option<i32>; SIZE as usize]; SIZE as usize],
+    board: [i32; (SIZE * SIZE) as usize],
 }
 
 impl Game {
     pub fn new() -> Game {
         Game {
             turn: 1,
-            board: [[None; SIZE as usize]; SIZE as usize],
+            board: [0; (SIZE * SIZE) as usize],
         }
+    }
+
+    pub fn piece(&self, x: i32, y: i32) -> i32 {
+        self.board[(x + y * SIZE) as usize]
     }
 
     /// Make the move (x, y)
     pub fn make_move(&mut self, x: i32, y: i32) -> Move {
-        if self.board[y as usize][x as usize].is_some() {
+        let index = (x + y * SIZE) as usize;
+        if self.board[index] > 0 {
             return Move::Fail;
         }
-        self.board[y as usize][x as usize] = Some(self.turn);
+        self.board[index] = self.turn;
         if self.check_victory(x, y) {
             return Move::Win;
         }
@@ -53,8 +58,9 @@ impl Game {
         if !in_bounds(x, y) {
             return 0;
         }
-        match self.board[y as usize][x as usize] {
-            Some(n) if same_parity(n, self.turn) => 1 + self.count_ray(x + dx, y + dy, dx, dy),
+        match self.board[(x + y * SIZE) as usize] {
+            0 => 0,
+            n if same_parity(n, self.turn) => 1 + self.count_ray(x + dx, y + dy, dx, dy),
             _ => 0,
         }
     }
