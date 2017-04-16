@@ -1,6 +1,7 @@
 //! Handles game state and logic
 
-pub const SIZE: i32 = 19;
+pub const SIZE: i32 = 15;
+pub const AREA: usize = 15 * 15;
 
 pub enum Move {
     Win,
@@ -11,14 +12,14 @@ pub enum Move {
 
 pub struct Game {
     pub turn: i32,
-    board: [i32; (SIZE * SIZE) as usize],
+    board: [i32; AREA],
 }
 
 impl Game {
     pub fn new() -> Game {
         Game {
             turn: 1,
-            board: [0; (SIZE * SIZE) as usize],
+            board: [0; AREA],
         }
     }
 
@@ -26,13 +27,20 @@ impl Game {
         self.board[(x + y * SIZE) as usize]
     }
 
+    pub fn can_move(&self, x:i32, y: i32) -> bool {
+        let center = SIZE / 2;
+        if self.turn == 3 && x >= center - 3 && x <= center + 3 && y >= center - 3 && y <= center + 3 {
+            return false;
+        }
+        self.piece(x, y) == 0
+    }
+
     /// Make the move (x, y)
     pub fn make_move(&mut self, x: i32, y: i32) -> Move {
-        let index = (x + y * SIZE) as usize;
-        if self.board[index] > 0 {
+        if !self.can_move(x, y) {
             return Move::Fail;
         }
-        self.board[index] = self.turn;
+        self.board[(x + y * SIZE) as usize] = self.turn;
         if self.check_victory(x, y) {
             return Move::Win;
         }
@@ -62,6 +70,15 @@ impl Game {
             0 => 0,
             n if same_parity(n, self.turn) => 1 + self.count_ray(x + dx, y + dy, dx, dy),
             _ => 0,
+        }
+    }
+}
+
+impl Clone for Game {
+    fn clone(&self) -> Game {
+        Game {
+            turn: self.turn,
+            board: self.board,
         }
     }
 }

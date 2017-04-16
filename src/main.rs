@@ -1,5 +1,7 @@
 //! Handles i/o
 
+extern crate rand;
+
 mod game;
 mod ai;
 
@@ -37,6 +39,8 @@ fn main() {
                 Move::Tie => break,
             };
         }
+        let (ai_x, ai_y) = ai::make_move(&game);
+        game.make_move(ai_x, ai_y);
     }
 }
 
