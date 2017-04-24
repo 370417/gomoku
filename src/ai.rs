@@ -36,16 +36,18 @@ pub fn make_move(game: &Game) -> (i32, i32) {
 impl GameTree {
 
     fn backpropagate(&mut self, game: &mut Game) -> i32 {
-        if self.unvisited.len() == 0 {
-            let best_index = self.select();
-            let best_child = &mut self.children[best_index];
-            let (x, y) = best_child.move_;
-            game.make_move(x, y);
-            let playout = best_child.backpropagate(game);
-            self.wins += playout;
-            playout
-        } else {
-            self.expand(game)
+        match (self.unvisited.len(), self.children.len()) {
+            (a, b) if a == 0 && b == 0 => 2,
+            (a, _) if a > 0 => self.expand(game),
+            _ => {
+                let best_index = self.select();
+                let best_child = &mut self.children[best_index];
+                let (x, y) = best_child.move_;
+                game.make_move(x, y);
+                let playout = best_child.backpropagate(game);
+                self.wins += playout;
+                playout
+            },
         }
     }
 
